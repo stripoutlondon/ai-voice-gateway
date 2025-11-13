@@ -16,6 +16,8 @@ function startRealtimeSession(clientConfig) {
   const session = {
     ws,
     _listeners: {},
+    _isOpen: false,
+    _pendingAudio: [],
 
     on(event, cb) {
       this._listeners[event] = this._listeners[event] || [];
@@ -33,7 +35,12 @@ function startRealtimeSession(clientConfig) {
     },
 
     sendAudio(base64Audio) {
-      // Twilio sends base64 g711_ulaw audio; send straight as input_audio_buffer.append
+      // If the Realtime WS isn't open yet, buffer the audio
+      if (!this._isOpen || ws.readyState !== WebSocket.OPEN) {
+        this._pendingAudio.push(base64Audio);
+        return;
+      }
+
       ws.send(
         JSON.stringify({
           type: "input_audio_buffer.append",
@@ -44,7 +51,9 @@ function startRealtimeSession(clientConfig) {
 
     endSession() {
       try {
-        ws.send(JSON.stringify({ type: "input_audio_buffer.commit" }));
+        if (this._isOpen && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: "input_audio_buffer.commit" }));
+        }
       } catch (e) {
         // ignore
       }
@@ -54,12 +63,14 @@ function startRealtimeSession(clientConfig) {
 
   ws.on("open", () => {
     logger.info("Connected to OpenAI Realtime");
+    session._isOpen = true;
 
     const instructions = `
 You are a friendly, professional telephone receptionist for ${clientConfig.business_name}.
 You are talking to a caller on the phone.
-Have a natural conversation. Use short answers. Ask clarifying questions.
-Speak British English. Do not mention that you are an AI unless asked.
+Have a natural conversation. Use short, clear answers.
+Ask follow-up questions when needed.
+Speak British English. Do not say you are an AI unless asked.
 `;
 
     const sessionUpdate = {
@@ -77,6 +88,20 @@ Speak British English. Do not mention that you are an AI unless asked.
     };
 
     ws.send(JSON.stringify(sessionUpdate));
+
+    // Flush any buffered audio now that the WS is open
+    if (session._pendingAudio.length > 0) {
+      logger.info(`Flushing ${session._pendingAudio.length} buffered audio chunks`);
+      session._pendingAudio.forEach(audio => {
+        ws.send(
+          JSON.stringify({
+            type: "input_audio_buffer.append",
+            audio
+          })
+        );
+      });
+      session._pendingAudio = [];
+    }
   });
 
   ws.on("message", data => {
@@ -96,6 +121,7 @@ Speak British English. Do not mention that you are an AI unless asked.
 
   ws.on("close", () => {
     logger.info("OpenAI Realtime connection closed");
+    session._isOpen = false;
   });
 
   ws.on("error", err => {
