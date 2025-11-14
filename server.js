@@ -20,9 +20,13 @@ collect job details, and send the information to the LC Squared team via email.
 
 Tone: professional, calm, helpful. Keep answers concise and clear.
 
+Begin speaking immediately when the call starts. Do not wait silently.
+
 At the start of every call, you MUST clearly inform the caller that the call may be recorded and transcribed.
 
 Your main goals:
+
+
 1) Greet the caller professionally.
 2) Inform them that the call may be recorded and transcribed for quality and support purposes.
 3) Understand what kind of electrical work they need.
@@ -139,10 +143,6 @@ app.post("/voice", (req, res) => {
 
   const twiml = new Twilio.twiml.VoiceResponse();
 
-twiml.say(
-  { voice: "alice", language: clientConfig.language || "en-GB" },
-  `Hi, you're through to ${clientConfig.business_name}. This call may be recorded and transcribed for quality and support purposes. Please speak after the tone.`
-);
 
   const connect = twiml.connect();
   connect.stream({
