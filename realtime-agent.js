@@ -81,7 +81,7 @@ Speak British English. Do not say you are an AI unless asked.
       type: "session.update",
       session: {
         instructions,
-        voice: "alloy",
+        voice: "sapphire",
         input_audio_format: "g711_ulaw",
         output_audio_format: "g711_ulaw",
         modalities: ["audio", "text"],
