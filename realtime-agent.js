@@ -96,21 +96,9 @@ Speak British English. Do not say you are an AI unless asked.
       }
     };
 
-    // 1) Send instructions / session config
     ws.send(JSON.stringify(sessionUpdate));
 
-    // 2) Ask the model to immediately greet the caller
-    ws.send(
-      JSON.stringify({
-        type: "response.create",
-        response: {
-          instructions:
-            "Begin the call now with your standard greeting to the caller."
-        }
-      })
-    );
-
-    // 3) Flush any buffered audio now that the WS is open
+    // Flush any buffered audio now that the WS is open
     if (session._pendingAudio.length > 0) {
       logger.info(
         `Flushing ${session._pendingAudio.length} buffered audio chunks`
@@ -136,7 +124,7 @@ Speak British English. Do not say you are an AI unless asked.
       return;
     }
 
-    // Log any error messages from OpenAI so we can debug voice / config issues
+    // Log any error messages from OpenAI so we can debug config issues
     if (msg.type === "error" || msg.type === "response.error") {
       logger.error("OpenAI Realtime error message:", msg);
     }

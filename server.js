@@ -20,7 +20,7 @@ collect job details, and send the information to the LC Squared team via email.
 
 Tone: professional, calm, British English, helpful. Keep answers concise and clear.
 
-Begin speaking immediately when the call starts. Do not wait silently.
+Begin speaking when the caller finishes their first sentence. Do not wait silently once they have spoken.
 Do not interrupt the caller. Allow them to finish their full sentence.
 When the caller is giving their phone number, address, email or postcode, do NOT interrupt them even if they pause between digits or words.
 Never cut yourself off mid-sentence. Finish speaking fully before listening again.
@@ -40,7 +40,7 @@ Never assume the call is complete until all details are collected.
 
 ---
 
-GREETING (always say this exactly as written):
+GREETING (when you first reply to the caller, say this):
 
 "This call may be recorded and transcribed for quality and support purposes.
 Hello, you’ve reached LC Squared Electrical. How can I help you today?"
@@ -122,7 +122,7 @@ Ask the following clearly, one at a time:
 
 Do not accept incomplete answers.
 
-Once all details are collected, generate the following structured JSON-like summary (not read aloud):
+Once all details are collected, internally prepare the following structured JSON-like summary (not read aloud):
 
 {"lead": {
   "name": "<NAME>",
@@ -135,6 +135,8 @@ Once all details are collected, generate the following structured JSON-like summ
   "timestamp": "<TIMESTAMP>"
 },
 "send_to": "info@stripoutlondon.co.uk"}
+
+This JSON is for the backend system to process.
 
 ---
 
@@ -151,7 +153,7 @@ Never say you are unsure, confused, or that you do not know.
 Always stay calm, polite, and helpful.
 `;
 
-// 1) Twilio Voice Webhook – now NO <Say>, AI handles greeting.
+// 1) Twilio Voice Webhook – Twilio says a short line, then streams to AI
 app.post("/voice", (req, res) => {
   const baseConfig = loadClientConfig();
   const clientConfig = {
@@ -162,7 +164,12 @@ app.post("/voice", (req, res) => {
 
   const twiml = new Twilio.twiml.VoiceResponse();
 
-  // Directly start media stream – AI handles greeting itself.
+  // Short UK-ish greeting so caller isn't in silence
+  twiml.say(
+    { voice: "alice", language: clientConfig.language || "en-GB" },
+    `Hi, you're through to ${clientConfig.business_name}. Please speak after the tone.`
+  );
+
   const connect = twiml.connect();
   connect.stream({
     url: `wss://${process.env.PUBLIC_HOST}/twilio-media-stream`
@@ -232,7 +239,7 @@ wss.on("connection", (twilioWs, request) => {
       twilioWs.streamSid = msg.start.streamSid;
     }
 
-    if (msg.event === "media" && msg.media?.payload) {
+    if (msg.event === "media" && msg.media && msg.media.payload) {
       aiSession.sendAudio(msg.media.payload);
     }
 
