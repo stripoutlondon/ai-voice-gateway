@@ -83,22 +83,34 @@ Speak British English. Do not say you are an AI unless asked.
       type: "session.update",
       session: {
         instructions,
-        voice: "alloy", // known-stable voice
+        voice: "alloy", // stable voice
         input_audio_format: "g711_ulaw",
         output_audio_format: "g711_ulaw",
         modalities: ["audio", "text"],
         turn_detection: {
           type: "server_vad",
           // Be generous so it doesn't cut off numbers / addresses
-          silence_duration_ms: 2000, // 2 seconds of silence before ending your turn
+          silence_duration_ms: 2000, // 2 seconds of silence before ending caller's turn
           prefix_padding_ms: 400
         }
       }
     };
 
+    // 1) Send instructions / session config
     ws.send(JSON.stringify(sessionUpdate));
 
-    // Flush any buffered audio now that the WS is open
+    // 2) Ask the model to immediately greet the caller
+    ws.send(
+      JSON.stringify({
+        type: "response.create",
+        response: {
+          instructions:
+            "Begin the call now with your standard greeting to the caller."
+        }
+      })
+    );
+
+    // 3) Flush any buffered audio now that the WS is open
     if (session._pendingAudio.length > 0) {
       logger.info(
         `Flushing ${session._pendingAudio.length} buffered audio chunks`
