@@ -65,8 +65,12 @@ function startRealtimeSession(clientConfig) {
     logger.info("Connected to OpenAI Realtime");
     session._isOpen = true;
 
-    const instructions = `
-You are a friendly, professional telephone receptionist for ${clientConfig.business_name}.
+    // Use the detailed assistant instructions from clientConfig if provided,
+    // otherwise fall back to a simple generic prompt.
+    const instructions =
+      clientConfig.assistant_instructions ||
+      `
+You are a friendly, professional telephone receptionist for ${clientConfig.business_name || "our client"}.
 You are talking to a caller on the phone.
 Have a natural conversation. Use short, clear answers.
 Ask follow-up questions when needed.
@@ -81,9 +85,12 @@ Speak British English. Do not say you are an AI unless asked.
         input_audio_format: "g711_ulaw",
         output_audio_format: "g711_ulaw",
         modalities: ["audio", "text"],
-        turn_detection: {
-          type: "server_vad"
-        }
+      turn_detection: {
+  type: "server_vad",
+  // Wait a bit longer before cutting the user off
+  silence_duration_ms: 1200,   // 1.2 seconds of silence before ending your turn
+  prefix_padding_ms: 300       // include a bit of audio before speech starts
+}
       }
     };
 
