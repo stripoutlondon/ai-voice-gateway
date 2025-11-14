@@ -70,7 +70,9 @@ function startRealtimeSession(clientConfig) {
     const instructions =
       clientConfig.assistant_instructions ||
       `
-You are a friendly, professional telephone receptionist for ${clientConfig.business_name || "our client"}.
+You are a friendly, professional telephone receptionist for ${
+        clientConfig.business_name || "our client"
+      }.
 You are talking to a caller on the phone.
 Have a natural conversation. Use short, clear answers.
 Ask follow-up questions when needed.
@@ -81,16 +83,16 @@ Speak British English. Do not say you are an AI unless asked.
       type: "session.update",
       session: {
         instructions,
-        voice: "sapphire",
+        voice: "alloy", // known-stable voice
         input_audio_format: "g711_ulaw",
         output_audio_format: "g711_ulaw",
         modalities: ["audio", "text"],
-      turn_detection: {
-  type: "server_vad",
-  // Wait a bit longer before cutting the user off
-  silence_duration_ms: 1200,   // 1.2 seconds of silence before ending your turn
-  prefix_padding_ms: 300       // include a bit of audio before speech starts
-}
+        turn_detection: {
+          type: "server_vad",
+          // Be generous so it doesn't cut off numbers / addresses
+          silence_duration_ms: 2000, // 2 seconds of silence before ending your turn
+          prefix_padding_ms: 400
+        }
       }
     };
 
@@ -98,7 +100,9 @@ Speak British English. Do not say you are an AI unless asked.
 
     // Flush any buffered audio now that the WS is open
     if (session._pendingAudio.length > 0) {
-      logger.info(`Flushing ${session._pendingAudio.length} buffered audio chunks`);
+      logger.info(
+        `Flushing ${session._pendingAudio.length} buffered audio chunks`
+      );
       session._pendingAudio.forEach(audio => {
         ws.send(
           JSON.stringify({
@@ -118,6 +122,11 @@ Speak British English. Do not say you are an AI unless asked.
     } catch (err) {
       logger.error("Failed to parse Realtime message:", err);
       return;
+    }
+
+    // Log any error messages from OpenAI so we can debug voice / config issues
+    if (msg.type === "error" || msg.type === "response.error") {
+      logger.error("OpenAI Realtime error message:", msg);
     }
 
     // Audio from model back to caller
