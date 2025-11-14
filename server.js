@@ -5,6 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const WebSocket = require("ws");
 const Twilio = require("twilio");
+const { URL } = require("url");
 const logger = require("./utils/logger");
 const loadClientConfig = require("./utils/config-loader");
 const startRealtimeSession = require("./realtime-agent");
@@ -12,11 +13,17 @@ const startRealtimeSession = require("./realtime-agent");
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// === FULL UPDATED LC SQUARED ASSISTANT INSTRUCTIONS (GDPR + UK + no cut-offs) ===
-const assistantInstructions = `
-You are the professional virtual receptionist for LC Squared Electrical, a UK-based electrical contractor.
-Your role is to answer incoming phone calls, understand the caller’s electrical issue, ask the correct questions,
-collect job details, and send the information to the LC Squared team via email.
+// === Build assistant instructions per client ===
+function buildAssistantInstructions(clientConfig) {
+  const businessName = clientConfig.business_name || "our client";
+  const leadEmail =
+    (clientConfig.lead_email && String(clientConfig.lead_email)) ||
+    "info@stripoutlondon.co.uk";
+
+  return `
+You are the professional virtual receptionist for ${businessName}, a UK-based contractor.
+Your role is to answer incoming phone calls, understand the caller’s issue, ask the correct questions,
+collect job details, and send the information to the ${businessName} team via email.
 
 Tone: professional, calm, British English, helpful. Keep answers concise and clear.
 
@@ -43,33 +50,32 @@ Never assume the call is complete until all details are collected.
 GREETING (when you first reply to the caller, say this):
 
 "This call may be recorded and transcribed for quality and support purposes.
-Hello, you’ve reached LC Squared Electrical. How can I help you today?"
+Hello, you’ve reached ${businessName}. How can I help you today?"
 
 ---
 
-SERVICE CATEGORIES YOU HANDLE:
+SERVICE CATEGORIES YOU HANDLE (adapt where relevant for this business):
 - 24/7 emergency callouts
-- Domestic electrical work
-- Commercial electrical work
-- Full or partial rewires
-- Consumer unit (fuse board) upgrades
-- EICR / landlord electrical certificates
-- EV charger installation
-- Fault finding (flickering lights, tripping circuits)
-- PAT testing
-- Smart home installations
-- Landlord / maintenance contracts
-- All other electrical work
+- Domestic work
+- Commercial work
+- Installations
+- Repairs
+- Maintenance
+- Fault finding
+- Inspections / certificates
+- Upgrades
+- Replacements
+- Other services relevant to ${businessName}'s industry
 
-If caller describes any electrical problem, acknowledge and continue:
+If caller describes any problem, acknowledge and continue:
 Say: "Sure, I can help with that."
 
 ---
 
-EMERGENCY FLOW (triggered by: urgent, no power, burning, sparking, smoke, dangerous, fuse tripped, fire smell)
+EMERGENCY FLOW (triggered by: urgent, emergency, no power, burning, sparking, smoke, dangerous, fire, leak, flood, or similar)
 
 Say:
-"Okay, I understand this might be urgent. Let me take a few details so an engineer can get back to you quickly."
+"Okay, I understand this might be urgent. Let me take a few details so someone can get back to you quickly."
 
 Ask:
 1) "What’s the full address, including postcode?"
@@ -80,32 +86,21 @@ Then continue gathering the remaining details.
 
 ---
 
-DOMESTIC WORK:
+DOMESTIC / RESIDENTIAL WORK:
 Say:
-"No problem — LC Squared covers all household electrical work. Could I take your name, postcode, and a brief description of the job?"
+"No problem — ${businessName} covers all household work in this area. Could I take your name, postcode, and a brief description of the job?"
 
 ---
 
 COMMERCIAL WORK:
 Say:
-"LC Squared handles electrical work for offices, shops, and commercial premises. Can I take your business name, postcode, and what needs doing?"
-
----
-
-SERVICE-SPECIFIC QUESTIONS (only ask when relevant):
-- Rewires: "Is this a full rewire or just part of the property?"
-- Consumer units: "Is this for safety, a renovation, or following an inspection?"
-- EICR: "How many bedrooms or circuits are involved?"
-- EV chargers: "Do you have a charger type in mind, or would you like recommendations?"
-- Fault finding: "Are you seeing flickering lights, tripping circuits, or something else?"
-- PAT testing: "Approximately how many appliances need testing?"
-- Smart home: "What type of smart features are you looking for — lighting, sensors, thermostats, or full automation?"
+"${businessName} handles work for offices, shops, and commercial premises. Can I take your business name, postcode, and what needs doing?"
 
 ---
 
 IF CALLER ASKS TO SPEAK TO SOMEONE:
 Say:
-"I can’t transfer the call, but I can take your details and pass them to the LC Squared team immediately."
+"I can’t transfer the call, but I can take your details and pass them to the ${businessName} team immediately."
 
 Then continue capturing full details.
 
@@ -134,7 +129,7 @@ Once all details are collected, internally prepare the following structured JSON
   "urgency": "<LOW/MEDIUM/HIGH>",
   "timestamp": "<TIMESTAMP>"
 },
-"send_to": "info@stripoutlondon.co.uk"}
+"send_to": "${leadEmail}"}
 
 This JSON is for the backend system to process.
 
@@ -143,7 +138,7 @@ This JSON is for the backend system to process.
 CLOSING:
 Always end with:
 
-"Thanks for calling LC Squared Electrical. I’ll pass this to the team now via email. They’ll be in touch shortly. Have a great day."
+"Thanks for calling ${businessName}. I’ll pass this to the team now via email. They’ll be in touch shortly. Have a great day."
 
 ---
 
@@ -152,14 +147,17 @@ If you are unsure what the caller said, ask:
 Never say you are unsure, confused, or that you do not know.
 Always stay calm, polite, and helpful.
 `;
+}
 
-// 1) Twilio Voice Webhook – Twilio says a short line, then streams to AI
+// 1) Twilio Voice Webhook – multi-client: choose config based on dialled number
 app.post("/voice", (req, res) => {
-  const baseConfig = loadClientConfig();
+  // Twilio "To" or "Called" number (E.164, e.g. +4420...)
+  const dialledNumber = req.body.To || req.body.Called || null;
+
+  const baseConfig = loadClientConfig(dialledNumber);
   const clientConfig = {
     ...baseConfig,
-    business_name: "LC Squared Electrical",
-    assistant_instructions: assistantInstructions
+    assistant_instructions: buildAssistantInstructions(baseConfig)
   };
 
   const twiml = new Twilio.twiml.VoiceResponse();
@@ -167,12 +165,17 @@ app.post("/voice", (req, res) => {
   // Short UK-ish greeting so caller isn't in silence
   twiml.say(
     { voice: "alice", language: clientConfig.language || "en-GB" },
-    `Hi, you're through to ${clientConfig.business_name}. Please speak after the tone.`
+    `Hi, you're through to ${clientConfig.business_name ||
+      "our team"}. Please speak after the tone.`
   );
 
   const connect = twiml.connect();
+  // Pass the dialled number into the stream URL so we can re-load the same client config
+  const publicHost = process.env.PUBLIC_HOST;
   connect.stream({
-    url: `wss://${process.env.PUBLIC_HOST}/twilio-media-stream`
+    url: `wss://${publicHost}/twilio-media-stream?to=${encodeURIComponent(
+      dialledNumber || ""
+    )}`
   });
 
   res.type("text/xml");
@@ -189,7 +192,7 @@ const server = app.listen(port, () => {
 const wss = new WebSocket.Server({ noServer: true });
 
 server.on("upgrade", (req, socket, head) => {
-  if (req.url === "/twilio-media-stream") {
+  if (req.url.startsWith("/twilio-media-stream")) {
     wss.handleUpgrade(req, socket, head, ws => {
       wss.emit("connection", ws, req);
     });
@@ -198,15 +201,23 @@ server.on("upgrade", (req, socket, head) => {
   }
 });
 
-// 4) Handle Twilio Media Stream connection
+// 4) Handle Twilio Media Stream connection (per-call AI session)
 wss.on("connection", (twilioWs, request) => {
   logger.info("Twilio Media Stream connected");
 
-  const baseConfig = loadClientConfig();
+  // Parse the ?to=... query param passed from the /voice TwiML
+  let dialledNumber = null;
+  try {
+    const url = new URL(request.url, `http://${request.headers.host}`);
+    dialledNumber = url.searchParams.get("to");
+  } catch (err) {
+    logger.error("Error parsing WebSocket request URL:", err);
+  }
+
+  const baseConfig = loadClientConfig(dialledNumber);
   const clientConfig = {
     ...baseConfig,
-    business_name: "LC Squared Electrical",
-    assistant_instructions: assistantInstructions
+    assistant_instructions: buildAssistantInstructions(baseConfig)
   };
 
   const aiSession = startRealtimeSession(clientConfig);
@@ -260,3 +271,4 @@ wss.on("connection", (twilioWs, request) => {
     aiSession.endSession();
   });
 });
+

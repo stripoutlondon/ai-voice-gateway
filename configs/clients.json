@@ -1,0 +1,124 @@
+{
+  "+44441223679845": {
+    "client_id": "lc_squared",
+    "business_name": "LC Squared Electrical",
+    "industry": "electrician",
+
+    "twilio_number": "+44441223679845",
+
+    "lead_email": "info@stripoutlondon.co.uk",
+    "lead_sms": null,
+    "lead_backup_email": null,
+
+    "services": [
+      "24/7 emergency callouts",
+      "Domestic electrical work",
+      "Commercial electrical work",
+      "Full or partial rewires",
+      "Consumer unit upgrades",
+      "EICR certificates",
+      "EV charger installation",
+      "Fault finding",
+      "PAT testing",
+      "Smart home installations",
+      "Landlord services",
+      "Maintenance contracts"
+    ],
+
+    "emergency_enabled": true,
+    "emergency_keywords": [
+      "urgent",
+      "no power",
+      "burning",
+      "smoke",
+      "sparking",
+      "dangerous",
+      "fire",
+      "tripped"
+    ],
+
+    "tone": "professional",
+    "language": "en-GB",
+
+    "opening_hours": "Mon–Fri 8am–6pm",
+    "after_hours_rules": "Forward all calls to AI",
+
+    "custom_intro": "Hello, you’ve reached LC Squared Electrical.",
+    "human_redirect_message": "I can take your details and get someone to call you back.",
+
+    "add_ons": {
+      "call_recording": false,
+      "human_qa": false,
+      "advanced_followup": false,
+      "custom_training": false
+    },
+
+    "lead_delivery": {
+      "method": "email_only",
+      "send_json": true,
+      "sheet_url": null
+    }
+  },
+
+  "+44441923311863": {
+    "client_id": "abc_plumbing",
+    "business_name": "ABC Plumbing & Heating",
+    "industry": "plumber",
+
+    "twilio_number": "+44441923311863",
+
+    "lead_email": "jobs@abcplumbing.co.uk",
+    "lead_sms": null,
+    "lead_backup_email": null,
+
+    "services": [
+      "24/7 emergency plumbing",
+      "Boiler repair",
+      "Boiler installation",
+      "No hot water",
+      "Leak detection",
+      "Burst pipe repairs",
+      "Blocked drains",
+      "Toilet repairs",
+      "Shower installation",
+      "Pipe replacement",
+      "Bathroom installation",
+      "Gas safety certificates"
+    ],
+
+    "emergency_enabled": true,
+    "emergency_keywords": [
+      "leak",
+      "burst",
+      "flood",
+      "no hot water",
+      "gas smell",
+      "emergency",
+      "urgent",
+      "dangerous"
+    ],
+
+    "tone": "friendly",
+    "language": "en-GB",
+
+    "opening_hours": "Mon–Sun 7am–10pm",
+    "after_hours_rules": "Forward all calls to AI",
+
+    "custom_intro": "Hello, you’ve reached ABC Plumbing & Heating.",
+    "human_redirect_message": "I can take your details and get someone to call you back.",
+
+    "add_ons": {
+      "call_recording": true,
+      "human_qa": true,
+      "advanced_followup": false,
+      "custom_training": true
+    },
+
+    "lead_delivery": {
+      "method": "email_and_sheet",
+      "send_json": true,
+      "sheet_url": "https://docs.google.com/spreadsheets/d/EXAMPLE-SHEET-ID"
+    }
+  }
+}
+
