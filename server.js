@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const WebSocket = require("ws");
 const Twilio = require("twilio");
 const { URL } = require("url");
-const fetch = require("node-fetch"); // used for Zapier webhook
 const logger = require("./utils/logger");
 const loadClientConfig = require("./utils/config-loader");
 const startRealtimeSession = require("./realtime-agent");
