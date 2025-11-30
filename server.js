@@ -225,6 +225,8 @@ Once you have all details, internally form a JSON-like object for the backend:
 
 You do NOT need to say this JSON aloud; it is for the system to process.
 
+Once you have collected all required lead details, you MUST call the tool named "capture_lead" exactly once with all the fields filled where possible.
+
 6) BOOKINGS AND PREFERRED TIMES:
 If the caller wants to book a visit or appointment:
 - Ask for preferred days/times.
@@ -233,6 +235,160 @@ Say:
 "The team will confirm the exact time with you shortly."
 
 7) CLOSING THE CALL:
-Once all detail
+Once all details are captured, say:
+
+"Perfect, I’ve got everything I need. I’ll pass this to the ${businessName} team now. They’ll be in touch with you shortly.
+Thanks for calling ${businessName}, and have a great day."
+
+Only then allow the call to end.
+
+8) IF YOU ARE UNSURE:
+If you don’t know something or it’s outside scope, say:
+"I don’t want to give you incorrect information. Let me take your details and the team will confirm the exact answer for you."
+
+Never say you are confused, limited, or an AI model. Always remain calm, polite, and helpful.
+`;
+}
 
 
+// 1) Twilio Voice Webhook – multi-client: choose config based on dialled number
+app.post("/voice", (req, res) => {
+  // Twilio "To" or "Called" number (E.164, e.g. +4420...)
+  const dialledNumber = req.body.To || req.body.Called || null;
+
+  const baseConfig = loadClientConfig(dialledNumber);
+  const clientConfig = {
+    ...baseConfig,
+    assistant_instructions: buildAssistantInstructions(baseConfig),
+  };
+
+  const twiml = new Twilio.twiml.VoiceResponse();
+
+  // Short UK-ish greeting so caller isn't in silence
+  twiml.say(
+    { voice: "alice", language: clientConfig.language || "en-GB" },
+    `Hi, you're through to ${
+      clientConfig.business_name || "our team"
+    }. Please speak after the tone.`
+  );
+
+  const connect = twiml.connect();
+  // Pass the dialled number into the stream URL so we can re-load the same client config
+  const publicHost = process.env.PUBLIC_HOST;
+  connect.stream({
+    url: `wss://${publicHost}/twilio-media-stream?to=${encodeURIComponent(
+      dialledNumber || ""
+    )}`,
+  });
+
+  res.type("text/xml");
+  res.send(twiml.toString());
+});
+
+// 2) Start HTTP server
+const port = process.env.PORT || 3000;
+const server = app.listen(port, () => {
+  logger.info(`Server listening on port ${port}`);
+});
+
+// 3) WebSocket server for Twilio Media Streams
+const wss = new WebSocket.Server({ noServer: true });
+
+server.on("upgrade", (req, socket, head) => {
+  if (req.url.startsWith("/twilio-media-stream")) {
+    wss.handleUpgrade(req, socket, head, (ws) => {
+      wss.emit("connection", ws, req);
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+// 4) Handle Twilio Media Stream connection (per-call AI session)
+wss.on("connection", (twilioWs, request) => {
+  logger.info("Twilio Media Stream connected");
+
+  // Parse the ?to=... query param passed from the /voice TwiML
+  let dialledNumber = null;
+  try {
+    const url = new URL(request.url, `http://${request.headers.host}`);
+    dialledNumber = url.searchParams.get("to");
+  } catch (err) {
+    logger.error("Error parsing WebSocket request URL:", err);
+  }
+
+  const baseConfig = loadClientConfig(dialledNumber);
+  const clientConfig = {
+    ...baseConfig,
+    assistant_instructions: buildAssistantInstructions(baseConfig),
+  };
+
+  const aiSession = startRealtimeSession(clientConfig);
+
+  // 🔊 Audio from AI → Twilio caller
+  aiSession.on("audio", (base64Audio) => {
+    if (!twilioWs.streamSid) return;
+
+    twilioWs.send(
+      JSON.stringify({
+        event: "media",
+        streamSid: twilioWs.streamSid,
+        media: { payload: base64Audio },
+      })
+    );
+  });
+
+  // 🆕 Lead event from AI session (make sure realtime-agent.js emits "lead")
+  aiSession.on("lead", async (lead) => {
+    try {
+      logger.info("[LEAD] Captured lead from AI session:", lead);
+
+      const payload = {
+        ...lead,
+        business_name: clientConfig.business_name,
+        industry: clientConfig.industry,
+        source: "AI Receptionist Phone",
+      };
+
+      await sendLeadToZapier(payload);
+    } catch (err) {
+      logger.error("Error sending lead to Zapier:", err);
+    }
+  });
+
+  // 🎧 Audio from caller → AI
+  twilioWs.on("message", (raw) => {
+    let msg;
+    try {
+      msg = JSON.parse(raw.toString());
+    } catch (err) {
+      logger.error("Error parsing Twilio WS message:", err);
+      return;
+    }
+
+    if (msg.event === "start") {
+      logger.info("Twilio stream started:", msg.start.streamSid);
+      twilioWs.streamSid = msg.start.streamSid;
+    }
+
+    if (msg.event === "media" && msg.media && msg.media.payload) {
+      aiSession.sendAudio(msg.media.payload);
+    }
+
+    if (msg.event === "stop") {
+      logger.info("Twilio stream stopped");
+      aiSession.endSession();
+      twilioWs.close();
+    }
+  });
+
+  twilioWs.on("close", () => {
+    logger.info("Twilio WebSocket closed");
+    aiSession.endSession();
+  });
+
+  twilioWs.on("error", (err) => {
+    logger.error("Twilio WebSocket error:", err);
+    aiSession.endSession();
+  });
+});
