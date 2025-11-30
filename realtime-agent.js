@@ -196,10 +196,14 @@ Speak British English. Do not say you are an AI unless asked.
     }
 
     // 🎧 Audio from model back to caller
-    // Current Realtime API uses "response.output_audio.delta" with "audio"
+    // Newer API: "response.output_audio.delta" with "audio"
     if (msg.type === "response.output_audio.delta" && msg.audio) {
-      // base64 g711_ulaw
-      session.emit("audio", msg.audio);
+      session.emit("audio", msg.audio); // base64 g711_ulaw
+    }
+
+    // Older / alternative shape: "response.audio.delta" with "delta"
+    if (msg.type === "response.audio.delta" && msg.delta) {
+      session.emit("audio", msg.delta); // base64 g711_ulaw
     }
 
     // 🧠 Tool / function calls (lead capture)
