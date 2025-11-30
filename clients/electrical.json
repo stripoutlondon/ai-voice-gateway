@@ -1,0 +1,19 @@
+{
+  "business_name": "LC Squared Electrical",
+  "industry": "electrician",
+  "service_area": "Greater London",
+  "tone": "professional",
+  "lead_email": "info@lcsquaredelectrical.co.uk",
+  "phone_number": "+441223679845",
+  "services": [
+    "Emergency electrical callouts",
+    "Domestic electrical work (house rewiring, circuit repairs, fuseboard replacement)",
+    "Commercial electrical installations and maintenance",
+    "Lighting design, repair, and installation",
+    "Electrical safety testing and certification",
+    "EV charger installation",
+    "Inspection and landlord safety certificates"
+  ],
+  "emergency_enabled": true,
+  "emergency_keywords": ["urgent", "emergency", "no power", "burning", "sparking", "smoke", "electric shock", "dangerous", "fire"]
+}

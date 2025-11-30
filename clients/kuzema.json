@@ -1,0 +1,17 @@
+{
+  "business_name": "Kuzema",
+  "industry": "children's clothing and personalised goods",
+  "service_area": "United Kingdom",
+  "tone": "friendly",
+  "lead_email": "support@kuzema.com",
+  "phone_number": "+441322952900",
+  "services": [
+    "Personalised children's clothing",
+    "Custom printed accessories (bags, hats, clothing)",
+    "Baby clothing and gift sets",
+    "Custom embroidery and monogramming",
+    "Made-to-order products and special designs"
+  ],
+  "emergency_enabled": false,
+  "emergency_keywords": []
+}

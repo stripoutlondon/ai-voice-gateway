@@ -1,0 +1,19 @@
+{
+  "business_name": "LC Squared Plumbing",
+  "industry": "plumber",
+  "service_area": "Greater London",
+  "tone": "professional",
+  "lead_email": "info@lcsquaredplumbing.co.uk",
+  "phone_number": "+441923311862",
+  "services": [
+    "Emergency leak repairs",
+    "Blocked drain and sewer clearance",
+    "Boiler and hot water repairs",
+    "Bathroom and kitchen plumbing installations",
+    "Pipework repairs and replacements",
+    "Water heater installation and maintenance",
+    "Burst pipe and flood response"
+  ],
+  "emergency_enabled": true,
+  "emergency_keywords": ["urgent", "emergency", "leak", "burst pipe", "no hot water", "blocked drain", "flood", "water damage", "dangerous"]
+}
