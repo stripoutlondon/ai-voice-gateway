@@ -59,7 +59,9 @@ function startRealtimeSession(clientConfig) {
           JSON.stringify({
             type: "response.create",
             response: {
-              // instructions/tools are already set in session.update
+              // Reuse tools defined in session.update, but explicitly
+              // allow the model to choose tools:
+              tool_choice: "auto",
             },
           })
         );
@@ -169,7 +171,7 @@ Speak British English. Do not say you are an AI unless asked.
             },
           },
         ],
-        tool_choice: "auto", // <- explicitly allow tool use
+        tool_choice: "auto", // <- explicitly allow tool use at session level
       },
     };
 
@@ -211,7 +213,7 @@ Speak British English. Do not say you are an AI unless asked.
     }
 
     // Reset flag when a response finishes or errors
-    if (msg.type === "response.completed" || msg.type === "response.error") {
+    if (msg.type === "response.done" || msg.type === "response.error") {
       session._responseInProgress = false;
     }
 
@@ -267,5 +269,6 @@ Speak British English. Do not say you are an AI unless asked.
 }
 
 module.exports = startRealtimeSession;
+
 
 
