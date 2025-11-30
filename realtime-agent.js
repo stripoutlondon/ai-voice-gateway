@@ -21,6 +21,7 @@ function startRealtimeSession(clientConfig) {
     _listeners: {},
     _isOpen: false,
     _pendingAudio: [],
+    _responseInProgress: false, // avoid spamming response.create
 
     on(event, cb) {
       this._listeners[event] = this._listeners[event] || [];
@@ -44,14 +45,26 @@ function startRealtimeSession(clientConfig) {
         return;
       }
 
+      // Append caller audio
       ws.send(
         JSON.stringify({
           type: "input_audio_buffer.append",
           audio: base64Audio,
         })
       );
-      // With server_vad enabled, OpenAI will automatically detect turns
-      // and create responses, so we don't manually commit/response.create here.
+
+      // Ask the model to respond, but only if we aren't already waiting
+      if (!this._responseInProgress) {
+        ws.send(
+          JSON.stringify({
+            type: "response.create",
+            response: {
+              // instructions/tools are already set in session.update
+            },
+          })
+        );
+        this._responseInProgress = true;
+      }
     },
 
     endSession() {
@@ -70,8 +83,6 @@ function startRealtimeSession(clientConfig) {
     logger.info("Connected to OpenAI Realtime");
     session._isOpen = true;
 
-    // Use the detailed assistant instructions from clientConfig if provided,
-    // otherwise fall back to a simple generic prompt.
     const instructions =
       clientConfig.assistant_instructions ||
       `
@@ -94,12 +105,11 @@ Speak British English. Do not say you are an AI unless asked.
         modalities: ["audio", "text"],
         turn_detection: {
           type: "server_vad",
-          // Be generous so it doesn't cut off numbers / addresses
-          silence_duration_ms: 2000, // 2 seconds of silence before ending caller's turn
+          silence_duration_ms: 2000,
           prefix_padding_ms: 400,
         },
 
-        // 🚀 TOOL: capture_lead
+        // 🚀 enable tools
         tools: [
           {
             type: "function",
@@ -159,6 +169,7 @@ Speak British English. Do not say you are an AI unless asked.
             },
           },
         ],
+        tool_choice: "auto", // <- explicitly allow tool use
       },
     };
 
@@ -190,13 +201,26 @@ Speak British English. Do not say you are an AI unless asked.
       return;
     }
 
+    // TEMP DEBUG: see what kinds of responses we're getting
+    if (msg.type && msg.type.startsWith("response.")) {
+      logger.info(
+        "[Realtime] Event:",
+        msg.type,
+        JSON.stringify(msg).slice(0, 500) // keep log sane
+      );
+    }
+
+    // Reset flag when a response finishes or errors
+    if (msg.type === "response.completed" || msg.type === "response.error") {
+      session._responseInProgress = false;
+    }
+
     // Log any error messages from OpenAI so we can debug config issues
     if (msg.type === "error" || msg.type === "response.error") {
       logger.error("OpenAI Realtime error message:", msg);
     }
 
     // 🎧 Audio from model back to caller
-    // Newer API: "response.output_audio.delta" with "audio"
     if (msg.type === "response.output_audio.delta" && msg.audio) {
       session.emit("audio", msg.audio); // base64 g711_ulaw
     }
@@ -216,11 +240,8 @@ Speak British English. Do not say you are an AI unless asked.
 
       if (fc.name === "capture_lead" && fc.arguments) {
         try {
-          // arguments is a JSON string
           const lead = JSON.parse(fc.arguments);
           logger.info("[AI] capture_lead tool called:", lead);
-
-          // Emit clean lead object up to server.js
           session.emit("lead", lead);
         } catch (err) {
           logger.error(
