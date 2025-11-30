@@ -1,0 +1,1002 @@
+[
+  {
+    "industry": "Electrician",
+    "services": [
+      "Electrical repairs",
+      "Fuse board replacements",
+      "Rewiring",
+      "Electrical inspections and certificates",
+      "New socket or lighting installations",
+      "EV charger installation",
+      "Emergency call-out for no power or sparking"
+    ],
+    "questions": [
+      "What is the nature of the electrical problem?",
+      "Is there power loss in the whole property or just specific circuits?",
+      "Are there any signs of burning or sparking?",
+      "What type of property is it (house, flat, office, etc.)?",
+      "Do you have a preferred date/time for an electrician to visit?",
+      "Is it an emergency requiring immediate attention?"
+    ]
+  },
+  {
+    "industry": "Plumber",
+    "services": [
+      "Leak detection and repair",
+      "Blocked drains and toilets",
+      "Boiler repair and service",
+      "Water heater installation",
+      "Pipe replacements",
+      "Bathroom and kitchen installations",
+      "Emergency burst pipe response"
+    ],
+    "questions": [
+      "What plumbing issue are you experiencing?",
+      "Where is the leak or blockage located?",
+      "Is water still running or has it been shut off?",
+      "Do you have a combi boiler or system boiler?",
+      "What type of property is it (house, flat, commercial)?",
+      "Is this an emergency requiring immediate attention?"
+    ]
+  },
+  {
+    "industry": "HVAC Technician",
+    "services": [
+      "Heating and cooling repairs",
+      "Air conditioning installation",
+      "Furnace repair and replacement",
+      "Heat pump service",
+      "Ventilation duct cleaning",
+      "Thermostat upgrades",
+      "Emergency HVAC call-out"
+    ],
+    "questions": [
+      "Is your issue related to heating or cooling?",
+      "What symptoms are you noticing (no heat, no cooling, noises)?",
+      "Do you know the make or model of your HVAC system?",
+      "How old is the system?",
+      "What type of property is it (residential/commercial)?",
+      "Is this an urgent repair?"
+    ]
+  },
+  {
+    "industry": "Locksmith",
+    "services": [
+      "Emergency lockouts",
+      "Lock repairs and replacements",
+      "Key cutting",
+      "Security upgrades",
+      "UPVC door lock repairs",
+      "Safe opening",
+      "Smart lock installations"
+    ],
+    "questions": [
+      "Are you locked out or do you need a lock repaired/replaced?",
+      "What type of door or lock is it (UPVC, wooden, metal)?",
+      "Is anyone inside the property?",
+      "Do you have a broken key or lost key?",
+      "Is this for a home, business, or vehicle?",
+      "Do you require immediate assistance?"
+    ]
+  },
+  {
+    "industry": "Roofer",
+    "services": [
+      "Roof repairs",
+      "Leak detection",
+      "New roof installation",
+      "Flat roof installation",
+      "Gutter cleaning and repair",
+      "Storm damage assessment",
+      "Roof inspections"
+    ],
+    "questions": [
+      "What roofing issue do you have (leak, missing tiles, etc.)?",
+      "What type of roof do you have (flat, pitched, slate, tile)?",
+      "Is there visible damage?",
+      "Are you experiencing any active leaks?",
+      "What is the property type (residential/commercial)?",
+      "How soon do you need the work done?"
+    ]
+  },
+  {
+    "industry": "General Contractor / Builder",
+    "services": [
+      "Home extensions",
+      "Loft conversions",
+      "General building renovations",
+      "Structural alterations",
+      "Garage conversions",
+      "Kitchen and bathroom remodels",
+      "Commercial fit-outs"
+    ],
+    "questions": [
+      "What type of project do you have (extension, renovation, conversion)?",
+      "Do you have architectural plans or drawings?",
+      "What is the approximate size of the project?",
+      "What is your budget range?",
+      "Are you currently occupied in the property?",
+      "When would you like the project to start?"
+    ]
+  },
+  {
+    "industry": "Home Remodeling / Renovation",
+    "services": [
+      "Kitchen remodels",
+      "Bathroom remodels",
+      "Full home refurbishment",
+      "Basement finishing",
+      "Open-plan living conversions",
+      "Flooring installation",
+      "Interior design"
+    ],
+    "questions": [
+      "Which rooms are you looking to remodel?",
+      "Do you have design inspiration or plans?",
+      "What\u2019s your target timeline?",
+      "What is your approximate budget?",
+      "Is the property occupied during work?",
+      "Are there any structural changes involved?"
+    ]
+  },
+  {
+    "industry": "Landscaping and Lawn Care",
+    "services": [
+      "Garden design",
+      "Lawn mowing and maintenance",
+      "Hedge trimming",
+      "Tree care and removal",
+      "Paving and decking",
+      "Fence installation",
+      "Irrigation system installation"
+    ],
+    "questions": [
+      "What services do you require (design, maintenance, tree work, etc.)?",
+      "What is the size of the garden or lawn area?",
+      "Do you have any specific features in mind (patio, pond, flower beds)?",
+      "Are there any access restrictions?",
+      "How soon do you want to start?",
+      "Is this a one-off job or ongoing maintenance?"
+    ]
+  },
+  {
+    "industry": "Pest Control",
+    "services": [
+      "Insect infestations (ants, cockroaches, bedbugs)",
+      "Rodent control (rats, mice)",
+      "Wasp and hornet nest removal",
+      "Fumigation services",
+      "Termite treatments",
+      "Wildlife removal",
+      "Preventative pest monitoring"
+    ],
+    "questions": [
+      "What type of pest problem do you have?",
+      "How long have you noticed the issue?",
+      "Where is the infestation located (kitchen, attic, garden)?",
+      "Have you tried any treatments already?",
+      "Is anyone at risk (children, pets)?",
+      "Is this an emergency infestation requiring immediate attention?"
+    ]
+  },
+  {
+    "industry": "Cleaning Services",
+    "services": [
+      "Domestic house cleaning",
+      "Office cleaning",
+      "End-of-tenancy cleaning",
+      "Carpet and upholstery cleaning",
+      "Deep cleaning",
+      "After-builders cleaning",
+      "Window cleaning"
+    ],
+    "questions": [
+      "What type of cleaning do you need (standard, deep, end-of-tenancy)?",
+      "How many rooms/areas require cleaning?",
+      "Are there any special requirements (carpets, windows, appliances)?",
+      "What is the property type (house, apartment, office)?",
+      "Do you supply cleaning products or should we bring our own?",
+      "When would you like the cleaning to be scheduled?"
+    ]
+  },
+  {
+    "industry": "Painting and Decorating",
+    "services": [
+      "Interior painting",
+      "Exterior painting",
+      "Wallpaper hanging",
+      "Surface preparation",
+      "Decorative finishes",
+      "Fence and deck staining",
+      "Commercial decorating"
+    ],
+    "questions": [
+      "Are you looking for interior, exterior, or both?",
+      "How many rooms or which areas need painting?",
+      "Do you have your own paint or prefer us to supply?",
+      "Are there any surface repairs needed?",
+      "Is the property occupied during painting?",
+      "When would you like the job completed?"
+    ]
+  },
+  {
+    "industry": "Handyman",
+    "services": [
+      "Minor home repairs",
+      "Fixture installations",
+      "Furniture assembly",
+      "Carpentry repairs",
+      "Small plumbing and electrical tasks",
+      "Patch and painting",
+      "General maintenance"
+    ],
+    "questions": [
+      "What tasks or repairs do you need assistance with?",
+      "How many rooms or items are involved?",
+      "Do you have materials on hand or need supply?",
+      "Are any tasks urgent or safety-related?",
+      "What is the property type?",
+      "What days or times are suitable?"
+    ]
+  },
+  {
+    "industry": "Auto Repair and Mechanic",
+    "services": [
+      "Vehicle diagnostics",
+      "Brake repairs",
+      "Engine repair",
+      "Oil changes and servicing",
+      "MOT and inspections",
+      "Battery replacement",
+      "Tyre fitting and alignment"
+    ],
+    "questions": [
+      "What make and model is your vehicle?",
+      "What issues or symptoms are you experiencing?",
+      "When was the vehicle last serviced?",
+      "Is the vehicle drivable?",
+      "Do you need a pick-up or towing service?",
+      "What day/time suits for bringing the car in?"
+    ]
+  },
+  {
+    "industry": "Towing and Roadside Assistance",
+    "services": [
+      "Emergency towing",
+      "Flat tyre repair",
+      "Jump-starts",
+      "Lockout service",
+      "Fuel delivery",
+      "Vehicle recovery",
+      "Winching services"
+    ],
+    "questions": [
+      "Where are you currently located (address or nearby landmark)?",
+      "What is the issue (breakdown, flat tyre, accident)?",
+      "What type of vehicle do you have?",
+      "Is the vehicle in a safe location?",
+      "Do you require towing to a specific garage?",
+      "Is anyone injured or need urgent assistance?"
+    ]
+  },
+  {
+    "industry": "IT Support and Computer Repair",
+    "services": [
+      "Computer diagnostics and repair",
+      "Virus removal",
+      "Laptop screen replacement",
+      "Data recovery",
+      "Network setup",
+      "Software installation",
+      "Hardware upgrades"
+    ],
+    "questions": [
+      "What kind of device do you need assistance with (desktop, laptop, server)?",
+      "What is the issue (won\u2019t boot, running slowly, software error)?",
+      "Do you have a backup of your data?",
+      "Is the device under warranty?",
+      "Is this for a home or business environment?",
+      "When would you like to schedule a service?"
+    ]
+  },
+  {
+    "industry": "Computer/Phone Repair Shop",
+    "services": [
+      "Smartphone screen repairs",
+      "Battery replacements",
+      "Water damage repairs",
+      "Tablet repairs",
+      "MacBook and PC repairs",
+      "Charging port replacements",
+      "Diagnostic checks"
+    ],
+    "questions": [
+      "What make and model is your device?",
+      "What is the issue (cracked screen, not turning on, etc.)?",
+      "Has the device been dropped or exposed to water?",
+      "Do you have any warranty or insurance?",
+      "Do you need a loaner phone?",
+      "When can you drop off or would you like a pick-up service?"
+    ]
+  },
+  {
+    "industry": "Solar Panel Installer",
+    "services": [
+      "Solar panel consultation",
+      "Solar system installation",
+      "Battery storage setup",
+      "Maintenance and cleaning",
+      "Inverter replacements",
+      "Grid-tied systems",
+      "Off-grid solutions"
+    ],
+    "questions": [
+      "Is this a residential or commercial property?",
+      "Do you have a south-facing roof or suitable area?",
+      "What is your average monthly electricity bill?",
+      "Are you interested in battery storage?",
+      "Do you have any roof shading issues (trees, buildings)?",
+      "What is your ideal installation timeline?"
+    ]
+  },
+  {
+    "industry": "Security & Alarm Installer",
+    "services": [
+      "Burglar alarm installation",
+      "CCTV installation",
+      "Access control systems",
+      "Intercom systems",
+      "Monitoring services",
+      "Alarm servicing",
+      "Smart home security integration"
+    ],
+    "questions": [
+      "What type of security system are you interested in (alarm, CCTV, access control)?",
+      "Is this for a home or business?",
+      "Do you require monitoring services?",
+      "Do you want smart home integration?",
+      "How many entry points or zones need covering?",
+      "Do you have existing equipment or is this a new installation?"
+    ]
+  },
+  {
+    "industry": "Real Estate Agency",
+    "services": [
+      "Property sales",
+      "Property lettings",
+      "Property valuations",
+      "Viewings arrangements",
+      "Tenant screening",
+      "Property management",
+      "Market advice and consultations"
+    ],
+    "questions": [
+      "Are you looking to sell or let a property?",
+      "What type of property is it (flat, house, commercial)?",
+      "Where is the property located?",
+      "Is it currently vacant or occupied?",
+      "Do you need a valuation or just general advice?",
+      "When would you like to list the property?"
+    ]
+  },
+  {
+    "industry": "Property Management Company",
+    "services": [
+      "Tenant management",
+      "Maintenance coordination",
+      "Rent collection",
+      "Legal compliance",
+      "Property inspections",
+      "Advertising vacancies",
+      "Financial reporting"
+    ],
+    "questions": [
+      "How many properties do you need managed?",
+      "What types of properties are they (residential, commercial)?",
+      "Do you have existing tenants?",
+      "What level of service are you seeking (full management vs tenant find)?",
+      "Do you require rent guarantees?",
+      "What are your major pain points with current management?"
+    ]
+  },
+  {
+    "industry": "Mortgage Broker",
+    "services": [
+      "Mortgage advice",
+      "First-time buyer mortgages",
+      "Remortgaging",
+      "Buy-to-let mortgages",
+      "Commercial mortgages",
+      "Bridging loans",
+      "Equity release"
+    ],
+    "questions": [
+      "Are you a first-time buyer, remortgaging or looking for a buy-to-let?",
+      "Approximate property price or value?",
+      "Deposit amount available?",
+      "Employment status and income level?",
+      "Do you have any existing mortgage offers?",
+      "Timeline for purchase or remortgage?"
+    ]
+  },
+  {
+    "industry": "Insurance Broker / Agent",
+    "services": [
+      "Home insurance",
+      "Auto insurance",
+      "Life insurance",
+      "Business insurance",
+      "Public liability insurance",
+      "Professional indemnity",
+      "Health insurance"
+    ],
+    "questions": [
+      "What type of insurance are you interested in?",
+      "Is this new coverage or a renewal?",
+      "Approximate value of assets (home, car, business)?",
+      "Any specific cover requirements (contents, legal expenses)?",
+      "Any previous claims history?",
+      "When do you need the policy to start?"
+    ]
+  },
+  {
+    "industry": "Accounting & Tax Consultant",
+    "services": [
+      "Self-assessment tax returns",
+      "Bookkeeping",
+      "Payroll services",
+      "VAT returns",
+      "Corporation tax",
+      "Financial statements",
+      "Business advice"
+    ],
+    "questions": [
+      "Are you an individual or a business?",
+      "Do you need help with personal tax, business accounts, or both?",
+      "Approximate turnover or income?",
+      "Do you use any accounting software?",
+      "Are you behind on any filings?",
+      "When would you like to start services?"
+    ]
+  },
+  {
+    "industry": "Small Law Firm / Legal Services",
+    "services": [
+      "Conveyancing",
+      "Wills and probate",
+      "Family law",
+      "Employment law",
+      "Contract drafting",
+      "Litigation",
+      "Debt recovery"
+    ],
+    "questions": [
+      "What type of legal matter do you need assistance with?",
+      "Are there any upcoming deadlines or court dates?",
+      "Where did the issue arise (jurisdiction)?",
+      "Have you previously engaged a solicitor?",
+      "Do you have documentation prepared?",
+      "When would you like to schedule a consultation?"
+    ]
+  },
+  {
+    "industry": "Dental Clinic",
+    "services": [
+      "Routine check-ups",
+      "Dental cleaning",
+      "Fillings",
+      "Root canals",
+      "Crowns and bridges",
+      "Dental implants",
+      "Emergency dental care"
+    ],
+    "questions": [
+      "Is this appointment for a routine check-up or a specific issue?",
+      "Are you experiencing pain or discomfort?",
+      "Do you have dental insurance?",
+      "Have you visited our clinic before?",
+      "Any known allergies or medical conditions?",
+      "Preferred dates or times for an appointment?"
+    ]
+  },
+  {
+    "industry": "Medical Clinic / GP Practice",
+    "services": [
+      "General consultations",
+      "Health check-ups",
+      "Vaccinations",
+      "Minor surgeries",
+      "Chronic disease management",
+      "Women\u2019s health services",
+      "Men\u2019s health services"
+    ],
+    "questions": [
+      "Do you need a routine appointment or have a specific health concern?",
+      "Are you a registered patient at our practice?",
+      "Are you experiencing any urgent symptoms (fever, pain, etc.)?",
+      "Any existing medical conditions we should know about?",
+      "Do you require a chaperone or interpreter?",
+      "Preferred appointment date and time?"
+    ]
+  },
+  {
+    "industry": "Physiotherapy & Chiropractic Clinic",
+    "services": [
+      "Musculoskeletal physiotherapy",
+      "Sports injury rehabilitation",
+      "Post-operative rehab",
+      "Chiropractic adjustments",
+      "Massage therapy",
+      "Manual therapy",
+      "Exercise programs"
+    ],
+    "questions": [
+      "What symptoms or injuries do you have?",
+      "When did the issue start?",
+      "Have you had any previous treatment?",
+      "Do you have a referral from a doctor?",
+      "Are you currently on any medications?",
+      "Preferred dates or times for treatment?"
+    ]
+  },
+  {
+    "industry": "Veterinary Clinic",
+    "services": [
+      "Routine check-ups",
+      "Vaccinations",
+      "Spaying and neutering",
+      "Emergency care",
+      "Dental care for pets",
+      "Diagnostic testing",
+      "Pet boarding"
+    ],
+    "questions": [
+      "What species is your pet (dog, cat, rabbit, other)?",
+      "What is the reason for the visit (vaccination, illness, routine check)?",
+      "How old is your pet?",
+      "Is your pet experiencing any acute symptoms?",
+      "Do you have pet insurance?",
+      "Preferred appointment date and time?"
+    ]
+  },
+  {
+    "industry": "Opticians / Eye Care Clinic",
+    "services": [
+      "Eye examinations",
+      "Prescription glasses",
+      "Contact lens fittings",
+      "Glaucoma screening",
+      "Cataract assessments",
+      "Children\u2019s eye tests",
+      "Laser eye surgery consultations"
+    ],
+    "questions": [
+      "Do you require a routine eye test or have a specific concern?",
+      "Do you currently wear glasses or contact lenses?",
+      "When was your last eye exam?",
+      "Are you experiencing any vision changes or discomfort?",
+      "Do you have a family history of eye conditions?",
+      "Preferred appointment date and time?"
+    ]
+  },
+  {
+    "industry": "Spa & Wellness Centre",
+    "services": [
+      "Massage therapy",
+      "Facials",
+      "Sauna and steam room",
+      "Body treatments",
+      "Manicure and pedicure",
+      "Skin care consultations",
+      "Couples packages"
+    ],
+    "questions": [
+      "What type of treatment are you looking for (massage, facial, etc.)?",
+      "Do you have any health conditions or injuries we should be aware of?",
+      "Have you visited us before?",
+      "Is this appointment for one person or a couple?",
+      "Preferred date and time?",
+      "Do you have any special requests (aromatherapy, deep tissue)?"
+    ]
+  },
+  {
+    "industry": "Hair Salon and Barber",
+    "services": [
+      "Haircuts",
+      "Hair colouring",
+      "Blow dries",
+      "Hair treatments",
+      "Beard trimming",
+      "Extensions and styling",
+      "Bridal hair styling"
+    ],
+    "questions": [
+      "Do you need a cut, colour, or another service?",
+      "Have you visited us before?",
+      "Do you have a preferred stylist?",
+      "What is your hair length or style goal?",
+      "Are you interested in any treatments (conditioning, keratin)?",
+      "Preferred appointment date and time?"
+    ]
+  },
+  {
+    "industry": "Tattoo & Piercing Studio",
+    "services": [
+      "Custom tattoo design",
+      "Tattoo cover-ups",
+      "Ear and body piercings",
+      "Tattoo removal consultations",
+      "Aftercare guidance",
+      "Tattoo touch-ups",
+      "Jewellery sales"
+    ],
+    "questions": [
+      "Are you interested in a tattoo or piercing?",
+      "Do you have a design in mind or need help creating one?",
+      "What size and placement are you considering?",
+      "Do you have any allergies or medical conditions?",
+      "Are you over 18?",
+      "Preferred appointment date and time?"
+    ]
+  },
+  {
+    "industry": "Wellness / Massage Therapy",
+    "services": [
+      "Deep tissue massage",
+      "Swedish massage",
+      "Sports massage",
+      "Hot stone therapy",
+      "Reflexology",
+      "Prenatal massage",
+      "Aromatherapy"
+    ],
+    "questions": [
+      "What type of massage are you interested in?",
+      "Do you have any injuries or medical conditions?",
+      "Is this for relaxation or therapeutic purposes?",
+      "How long do you want the session to be (30, 60, 90 minutes)?",
+      "Have you visited us before?",
+      "Preferred appointment date and time?"
+    ]
+  },
+  {
+    "industry": "Non-Profit & Charity Organisations",
+    "services": [
+      "Donation inquiries",
+      "Volunteer recruitment",
+      "Fundraising campaign support",
+      "Event organisation",
+      "Community outreach",
+      "Grant applications",
+      "Public relations and awareness"
+    ],
+    "questions": [
+      "Are you looking to donate, volunteer, or request support?",
+      "Which program or cause are you interested in?",
+      "Are you representing a company or yourself?",
+      "Do you need information about our projects?",
+      "Would you like to receive our newsletter?",
+      "How can we contact you (phone/email)?"
+    ]
+  },
+  {
+    "industry": "Business Consultancy",
+    "services": [
+      "Business strategy development",
+      "Process optimisation",
+      "Market research",
+      "Risk management",
+      "Change management",
+      "Digital transformation",
+      "Operational efficiency"
+    ],
+    "questions": [
+      "What specific business challenge are you facing?",
+      "What industry are you in?",
+      "How big is your organisation?",
+      "Have you worked with consultants before?",
+      "What goals are you looking to achieve?",
+      "Timeline and budget for the project?"
+    ]
+  },
+  {
+    "industry": "Digital Marketing Agency",
+    "services": [
+      "SEO optimisation",
+      "Pay-per-click advertising",
+      "Social media management",
+      "Content creation",
+      "Email marketing",
+      "Website development",
+      "Marketing analytics and reporting"
+    ],
+    "questions": [
+      "What services are you interested in (SEO, PPC, social media, etc.)?",
+      "Do you currently have a marketing strategy?",
+      "Who is your target audience?",
+      "What is your monthly marketing budget?",
+      "Do you need a new website or improvements to an existing one?",
+      "What are your primary marketing goals?"
+    ]
+  },
+  {
+    "industry": "Travel Agency",
+    "services": [
+      "Flight bookings",
+      "Hotel reservations",
+      "Package holidays",
+      "Cruises",
+      "Group travel planning",
+      "Travel insurance",
+      "Visa assistance"
+    ],
+    "questions": [
+      "Where would you like to travel to?",
+      "Do you have specific dates or are you flexible?",
+      "What is your budget range?",
+      "Do you need flights, accommodation, or a complete package?",
+      "Are you travelling alone, as a couple, or with a group?",
+      "Any special requirements (dietary restrictions, accessibility)?"
+    ]
+  },
+  {
+    "industry": "Event Planning & Wedding Coordination",
+    "services": [
+      "Wedding planning",
+      "Corporate events",
+      "Birthday parties",
+      "Venue sourcing",
+      "Catering coordination",
+      "Decoration and theming",
+      "On-day coordination"
+    ],
+    "questions": [
+      "What type of event are you planning?",
+      "What date or time frame are you considering?",
+      "How many guests are you expecting?",
+      "What is your approximate budget?",
+      "Do you have a venue or location in mind?",
+      "What services do you need help with (planning, catering, d\u00e9cor)?"
+    ]
+  },
+  {
+    "industry": "Photography & Videography Studio",
+    "services": [
+      "Portrait photography",
+      "Wedding photography",
+      "Corporate headshots",
+      "Event videography",
+      "Product photography",
+      "Editing and post-production",
+      "Photo printing"
+    ],
+    "questions": [
+      "What type of photography/videography do you need?",
+      "When and where will the shoot take place?",
+      "How many hours do you require?",
+      "Do you need prints, digital files, or both?",
+      "Do you have specific style or artistic preferences?",
+      "Any special requests or subjects (e.g., pets, props)?"
+    ]
+  },
+  {
+    "industry": "Courier & Delivery Service",
+    "services": [
+      "Same-day delivery",
+      "Next-day delivery",
+      "International shipping",
+      "Parcel tracking",
+      "Large or bulk item delivery",
+      "Document courier services",
+      "E-commerce fulfillment"
+    ],
+    "questions": [
+      "What is the pickup and drop-off address?",
+      "What is the size/weight of the parcel?",
+      "Is it fragile or requires special handling?",
+      "What delivery speed do you need (same-day, next-day, standard)?",
+      "Do you need insurance or signature confirmation?",
+      "Any specific delivery instructions?"
+    ]
+  },
+  {
+    "industry": "Waste Management & Skip Hire",
+    "services": [
+      "Skip hire",
+      "Wheelie bin collection",
+      "Bulk waste removal",
+      "Hazardous waste disposal",
+      "Recycling services",
+      "Site clearance",
+      "Fly tipping clearance"
+    ],
+    "questions": [
+      "What type of waste do you need to dispose of?",
+      "How much waste is there (bags, cubic yards)?",
+      "Do you require a skip or pickup service?",
+      "What is the property type (domestic, construction, commercial)?",
+      "Any access restrictions for loading or collection?",
+      "Preferred collection date and time?"
+    ]
+  },
+  {
+    "industry": "Furniture Removal & Moving Service",
+    "services": [
+      "House removals",
+      "Office relocation",
+      "Furniture disposal",
+      "Packing and unpacking",
+      "Storage services",
+      "Man and van services",
+      "Piano and fragile item transport"
+    ],
+    "questions": [
+      "Where are you moving from and to?",
+      "What is the size of the move (number of rooms/items)?",
+      "Do you need packing materials or packing services?",
+      "Are there any large or fragile items (piano, antiques)?",
+      "Do you require storage before or after the move?",
+      "Preferred moving date and time?"
+    ]
+  },
+  {
+    "industry": "Car Hire & Taxi Service",
+    "services": [
+      "Airport transfers",
+      "Local taxi service",
+      "Long-distance hire",
+      "Corporate account bookings",
+      "Minibus and group transport",
+      "Executive car hire",
+      "Courier services"
+    ],
+    "questions": [
+      "Where would you like to be picked up and dropped off?",
+      "What date and time is your journey?",
+      "How many passengers will travel?",
+      "Do you have a preferred vehicle type?",
+      "Do you require a return journey?",
+      "Any special requirements (child seats, wheelchair access)?"
+    ]
+  },
+  {
+    "industry": "Hotel & B&B",
+    "services": [
+      "Room bookings",
+      "Group reservations",
+      "Event venue booking",
+      "Breakfast and meal plans",
+      "Spa packages",
+      "Conference facilities",
+      "Special event packages"
+    ],
+    "questions": [
+      "What dates would you like to stay?",
+      "How many guests and what room type?",
+      "Do you need any special accommodations (accessibility, pets)?",
+      "Do you need conference or event space?",
+      "Any dining or spa package required?",
+      "Is this a special occasion (anniversary, wedding)?"
+    ]
+  },
+  {
+    "industry": "Restaurant & Takeaway",
+    "services": [
+      "Table reservations",
+      "Event catering",
+      "Private dining",
+      "Takeaway orders",
+      "Delivery services",
+      "Gift vouchers",
+      "Corporate catering"
+    ],
+    "questions": [
+      "How many people are in your party?",
+      "What date and time would you like to dine?",
+      "Do you have any dietary restrictions or allergies?",
+      "Is this for dine-in or takeaway?",
+      "Any special requests (highchair, birthday cake, etc.)?",
+      "Would you like to pre-order or select a menu?"
+    ]
+  },
+  {
+    "industry": "Catering Services",
+    "services": [
+      "Wedding catering",
+      "Corporate catering",
+      "Private party catering",
+      "Buffet setup",
+      "Cocktail receptions",
+      "Menu planning",
+      "Event staffing"
+    ],
+    "questions": [
+      "What type of event are you catering for?",
+      "How many guests are you expecting?",
+      "Do you have a preferred cuisine or menu?",
+      "Do you need vegetarian, vegan or special dietary options?",
+      "Where will the event take place?",
+      "What is your budget per head?"
+    ]
+  },
+  {
+    "industry": "Pet Grooming & Boarding",
+    "services": [
+      "Dog grooming",
+      "Cat grooming",
+      "Nail clipping",
+      "Ear cleaning",
+      "Pet boarding",
+      "Daycare",
+      "Special grooming packages"
+    ],
+    "questions": [
+      "What type of pet do you have?",
+      "What services do you need (grooming, boarding, daycare)?",
+      "Does your pet have any medical conditions or allergies?",
+      "Is your pet up to date on vaccinations?",
+      "Preferred date and time for grooming or drop-off?",
+      "Any special instructions or concerns?"
+    ]
+  },
+  {
+    "industry": "Childcare & Nanny Services",
+    "services": [
+      "Full-time nanny",
+      "Part-time nanny",
+      "After-school care",
+      "Babysitting",
+      "Nursery placement",
+      "Special needs care",
+      "Holiday care"
+    ],
+    "questions": [
+      "How many children and what ages?",
+      "What hours or days do you need childcare?",
+      "Do your children have any allergies or special requirements?",
+      "Do you need light housework or meal prep?",
+      "Do you require a nanny with specific qualifications or language skills?",
+      "When would you like the service to begin?"
+    ]
+  },
+  {
+    "industry": "Education & Tutoring",
+    "services": [
+      "Private tutoring",
+      "Group tutoring",
+      "Exam preparation",
+      "Language lessons",
+      "Music lessons",
+      "Online tutoring",
+      "Special needs tutoring"
+    ],
+    "questions": [
+      "What subject or instrument is the tutoring for?",
+      "What level or grade is the student?",
+      "How often do you require sessions?",
+      "Do you prefer online or in-person sessions?",
+      "Any specific goals or exams you are working toward?",
+      "When would you like to start?"
+    ]
+  },
+  {
+    "industry": "Fitness & Personal Training",
+    "services": [
+      "One-on-one personal training",
+      "Group fitness classes",
+      "Nutrition coaching",
+      "Weight training",
+      "Yoga and Pilates",
+      "Boot camps",
+      "Corporate fitness programs"
+    ],
+    "questions": [
+      "Do you want one-on-one training or group classes?",
+      "What are your fitness goals (weight loss, strength, flexibility)?",
+      "Do you have any medical conditions or injuries?",
+      "What is your current fitness level?",
+      "Preferred training days and times?",
+      "Do you require a location (gym, home, outdoor)?"
+    ]
+  }
+]

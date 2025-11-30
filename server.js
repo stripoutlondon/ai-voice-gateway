@@ -6,12 +6,39 @@ const bodyParser = require("body-parser");
 const WebSocket = require("ws");
 const Twilio = require("twilio");
 const { URL } = require("url");
+const fetch = require("node-fetch"); // used for Zapier webhook
 const logger = require("./utils/logger");
 const loadClientConfig = require("./utils/config-loader");
 const startRealtimeSession = require("./realtime-agent");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// --------------------------------------
+// ZAPIER LEAD SENDER
+// --------------------------------------
+async function sendLeadToZapier(lead) {
+  const url = process.env.ZAPIER_DEFAULT_LEAD_WEBHOOK;
+  if (!url) {
+    console.error("[ZAPIER] Missing ZAPIER_DEFAULT_LEAD_WEBHOOK env var");
+    return;
+  }
+
+  console.log("[ZAPIER] Sending lead to Zapier:", JSON.stringify(lead, null, 2));
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(lead),
+  });
+
+  const text = await res.text();
+  console.log("[ZAPIER] Response status:", res.status, "body:", text);
+}
+// --------------------------------------
+// END ZAPIER LEAD SENDER
+// --------------------------------------
+
 
 // === Build assistant instructions per client ===
 function buildAssistantInstructions(clientConfig) {
@@ -49,7 +76,7 @@ function buildAssistantInstructions(clientConfig) {
 
   const servicesSection =
     services.length > 0
-      ? services.map(s => `- ${s}`).join("\n")
+      ? services.map((s) => `- ${s}`).join("\n")
       : `- Installations
 - Repairs
 - Maintenance
@@ -79,7 +106,7 @@ function buildAssistantInstructions(clientConfig) {
         "leak",
         "burst",
         "flood",
-        "locked out"
+        "locked out",
       ];
 
   const emergencyTriggerLine = emergencyEnabled
@@ -206,142 +233,6 @@ Say:
 "The team will confirm the exact time with you shortly."
 
 7) CLOSING THE CALL:
-Once all details are captured, say:
-
-"Perfect, I’ve got everything I need. I’ll pass this to the ${businessName} team now. They’ll be in touch with you shortly.
-Thanks for calling ${businessName}, and have a great day."
-
-Only then allow the call to end.
-
-8) IF YOU ARE UNSURE:
-If you don’t know something or it’s outside scope, say:
-"I don’t want to give you incorrect information. Let me take your details and the team will confirm the exact answer for you."
-
-Never say you are confused, limited, or an AI model. Always remain calm, polite, and helpful.
-`;
-}
-
-// 1) Twilio Voice Webhook – multi-client: choose config based on dialled number
-app.post("/voice", (req, res) => {
-  // Twilio "To" or "Called" number (E.164, e.g. +4420...)
-  const dialledNumber = req.body.To || req.body.Called || null;
-
-  const baseConfig = loadClientConfig(dialledNumber);
-  const clientConfig = {
-    ...baseConfig,
-    assistant_instructions: buildAssistantInstructions(baseConfig)
-  };
-
-  const twiml = new Twilio.twiml.VoiceResponse();
-
-  // Short UK-ish greeting so caller isn't in silence
-  twiml.say(
-    { voice: "alice", language: clientConfig.language || "en-GB" },
-    `Hi, you're through to ${clientConfig.business_name ||
-      "our team"}. Please speak after the tone.`
-  );
-
-  const connect = twiml.connect();
-  // Pass the dialled number into the stream URL so we can re-load the same client config
-  const publicHost = process.env.PUBLIC_HOST;
-  connect.stream({
-    url: `wss://${publicHost}/twilio-media-stream?to=${encodeURIComponent(
-      dialledNumber || ""
-    )}`
-  });
-
-  res.type("text/xml");
-  res.send(twiml.toString());
-});
-
-// 2) Start HTTP server
-const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
-  logger.info(`Server listening on port ${port}`);
-});
-
-// 3) WebSocket server for Twilio Media Streams
-const wss = new WebSocket.Server({ noServer: true });
-
-server.on("upgrade", (req, socket, head) => {
-  if (req.url.startsWith("/twilio-media-stream")) {
-    wss.handleUpgrade(req, socket, head, ws => {
-      wss.emit("connection", ws, req);
-    });
-  } else {
-    socket.destroy();
-  }
-});
-
-// 4) Handle Twilio Media Stream connection (per-call AI session)
-wss.on("connection", (twilioWs, request) => {
-  logger.info("Twilio Media Stream connected");
-
-  // Parse the ?to=... query param passed from the /voice TwiML
-  let dialledNumber = null;
-  try {
-    const url = new URL(request.url, `http://${request.headers.host}`);
-    dialledNumber = url.searchParams.get("to");
-  } catch (err) {
-    logger.error("Error parsing WebSocket request URL:", err);
-  }
-
-  const baseConfig = loadClientConfig(dialledNumber);
-  const clientConfig = {
-    ...baseConfig,
-    assistant_instructions: buildAssistantInstructions(baseConfig)
-  };
-
-  const aiSession = startRealtimeSession(clientConfig);
-
-  // Audio from AI → Twilio caller
-  aiSession.on("audio", base64Audio => {
-    if (!twilioWs.streamSid) return;
-
-    twilioWs.send(
-      JSON.stringify({
-        event: "media",
-        streamSid: twilioWs.streamSid,
-        media: { payload: base64Audio }
-      })
-    );
-  });
-
-  // Audio from caller → AI
-  twilioWs.on("message", raw => {
-    let msg;
-    try {
-      msg = JSON.parse(raw.toString());
-    } catch (err) {
-      logger.error("Error parsing Twilio WS message:", err);
-      return;
-    }
-
-    if (msg.event === "start") {
-      logger.info("Twilio stream started:", msg.start.streamSid);
-      twilioWs.streamSid = msg.start.streamSid;
-    }
-
-    if (msg.event === "media" && msg.media && msg.media.payload) {
-      aiSession.sendAudio(msg.media.payload);
-    }
-
-    if (msg.event === "stop") {
-      logger.info("Twilio stream stopped");
-      aiSession.endSession();
-      twilioWs.close();
-    }
-  });
-
-  twilioWs.on("close", () => {
-    logger.info("Twilio WebSocket closed");
-    aiSession.endSession();
-  });
-
-  twilioWs.on("error", err => {
-    logger.error("Twilio WebSocket error:", err);
-    aiSession.endSession();
-  });
-});
+Once all detail
 
 

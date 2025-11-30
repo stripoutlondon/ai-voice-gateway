@@ -5,12 +5,15 @@ const logger = require("./utils/logger");
 function startRealtimeSession(clientConfig) {
   const model = process.env.OPENAI_REALTIME_MODEL || "gpt-4o-realtime-preview";
 
-  const url = `wss://api.openai.com/v1/realtime?model=${model}`;
+  const url = `wss://api.openai.com/v1/realtime?model=${encodeURIComponent(
+    model
+  )}`;
+
   const ws = new WebSocket(url, {
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      "OpenAI-Beta": "realtime=v1"
-    }
+      "OpenAI-Beta": "realtime=v1",
+    },
   });
 
   const session = {
@@ -25,7 +28,7 @@ function startRealtimeSession(clientConfig) {
     },
 
     emit(event, data) {
-      (this._listeners[event] || []).forEach(cb => {
+      (this._listeners[event] || []).forEach((cb) => {
         try {
           cb(data);
         } catch (err) {
@@ -44,9 +47,11 @@ function startRealtimeSession(clientConfig) {
       ws.send(
         JSON.stringify({
           type: "input_audio_buffer.append",
-          audio: base64Audio
+          audio: base64Audio,
         })
       );
+      // With server_vad enabled, OpenAI will automatically detect turns
+      // and create responses, so we don't manually commit/response.create here.
     },
 
     endSession() {
@@ -58,7 +63,7 @@ function startRealtimeSession(clientConfig) {
         // ignore
       }
       ws.close();
-    }
+    },
   };
 
   ws.on("open", () => {
@@ -83,7 +88,7 @@ Speak British English. Do not say you are an AI unless asked.
       type: "session.update",
       session: {
         instructions,
-        voice: "alloy", // stable voice
+        voice: clientConfig.voice || "alloy",
         input_audio_format: "g711_ulaw",
         output_audio_format: "g711_ulaw",
         modalities: ["audio", "text"],
@@ -91,9 +96,70 @@ Speak British English. Do not say you are an AI unless asked.
           type: "server_vad",
           // Be generous so it doesn't cut off numbers / addresses
           silence_duration_ms: 2000, // 2 seconds of silence before ending caller's turn
-          prefix_padding_ms: 400
-        }
-      }
+          prefix_padding_ms: 400,
+        },
+
+        // 🚀 TOOL: capture_lead
+        tools: [
+          {
+            type: "function",
+            name: "capture_lead",
+            description:
+              "Capture a fully qualified service lead from the caller.",
+            parameters: {
+              type: "object",
+              properties: {
+                name: {
+                  type: "string",
+                  description: "Caller full name",
+                },
+                phone: {
+                  type: "string",
+                  description: "Best contact phone number",
+                },
+                email: {
+                  type: "string",
+                  description: "Email address if provided",
+                },
+                address: {
+                  type: "string",
+                  description: "Full address including street, town, etc.",
+                },
+                postcode: {
+                  type: "string",
+                  description: "UK postcode",
+                },
+                job_type: {
+                  type: "string",
+                  description:
+                    "Short job type/category, e.g. 'consumer unit upgrade'",
+                },
+                description: {
+                  type: "string",
+                  description:
+                    "Detailed description of the issue or work requested",
+                },
+                urgency: {
+                  type: "string",
+                  enum: ["low", "medium", "high"],
+                  description:
+                    "How urgent the job is from the caller’s perspective",
+                },
+                company: {
+                  type: "string",
+                  description: "Company name for commercial callers",
+                },
+                how_found: {
+                  type: "string",
+                  description:
+                    "How the caller found the business (Google, referral, etc.)",
+                },
+              },
+              required: ["name", "phone", "address", "postcode", "description"],
+            },
+          },
+        ],
+      },
     };
 
     ws.send(JSON.stringify(sessionUpdate));
@@ -103,11 +169,11 @@ Speak British English. Do not say you are an AI unless asked.
       logger.info(
         `Flushing ${session._pendingAudio.length} buffered audio chunks`
       );
-      session._pendingAudio.forEach(audio => {
+      session._pendingAudio.forEach((audio) => {
         ws.send(
           JSON.stringify({
             type: "input_audio_buffer.append",
-            audio
+            audio,
           })
         );
       });
@@ -115,7 +181,7 @@ Speak British English. Do not say you are an AI unless asked.
     }
   });
 
-  ws.on("message", data => {
+  ws.on("message", (data) => {
     let msg;
     try {
       msg = JSON.parse(data.toString());
@@ -129,9 +195,37 @@ Speak British English. Do not say you are an AI unless asked.
       logger.error("OpenAI Realtime error message:", msg);
     }
 
-    // Audio from model back to caller
-    if (msg.type === "response.audio.delta" && msg.delta) {
-      session.emit("audio", msg.delta); // base64 g711_ulaw
+    // 🎧 Audio from model back to caller
+    // Current Realtime API uses "response.output_audio.delta" with "audio"
+    if (msg.type === "response.output_audio.delta" && msg.audio) {
+      // base64 g711_ulaw
+      session.emit("audio", msg.audio);
+    }
+
+    // 🧠 Tool / function calls (lead capture)
+    if (
+      msg.type === "response.output_item.added" &&
+      msg.item &&
+      msg.item.type === "function_call"
+    ) {
+      const fc = msg.item;
+
+      if (fc.name === "capture_lead" && fc.arguments) {
+        try {
+          // arguments is a JSON string
+          const lead = JSON.parse(fc.arguments);
+          logger.info("[AI] capture_lead tool called:", lead);
+
+          // Emit clean lead object up to server.js
+          session.emit("lead", lead);
+        } catch (err) {
+          logger.error(
+            "Failed to parse capture_lead arguments:",
+            err,
+            fc.arguments
+          );
+        }
+      }
     }
   });
 
@@ -140,7 +234,7 @@ Speak British English. Do not say you are an AI unless asked.
     session._isOpen = false;
   });
 
-  ws.on("error", err => {
+  ws.on("error", (err) => {
     logger.error("OpenAI Realtime error:", err);
   });
 
@@ -148,3 +242,5 @@ Speak British English. Do not say you are an AI unless asked.
 }
 
 module.exports = startRealtimeSession;
+
+

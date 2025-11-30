@@ -1,0 +1,10 @@
+{
+  "name": "John Doe",
+  "phone": "07700912345",
+  "email": "john.doe@example.com",
+  "address": "123 King Street, London",
+  "postcode": "SW1A 1AA",
+  "service_type": "Electrical repair",
+  "description": "Power outage in the living room, lights not working",
+  "urgency": "medium"
+}
