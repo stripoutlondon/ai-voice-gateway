@@ -8,10 +8,11 @@
   },
   "dependencies": {
     "body-parser": "^1.20.2",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.6.1",
     "express": "^4.19.2",
     "nodemailer": "^7.0.10",
-    "twilio": "^5.0.4",
-    "ws": "^8.16.0"
+    "twilio": "^5.10.5",
+    "ws": "^8.16.0",
+    "xlsx": "^0.18.5"
   }
 }
