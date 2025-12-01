@@ -199,5 +199,53 @@ Speak British English. Do not say you are an AI unless asked.
 
     // Log any error messages from OpenAI so we can debug config issues
     if (msg.type === "error" || msg.type === "response.error") {
-      logger.error("OpenAI Realtime error message
+      logger.error("OpenAI Realtime error message:", msg);
+    }
 
+    // 🎧 Audio from model back to caller
+    if (msg.type === "response.output_audio.delta" && msg.audio) {
+      session.emit("audio", msg.audio); // base64 g711_ulaw
+    }
+
+    // Older / alternative shape: "response.audio.delta" with "delta"
+    if (msg.type === "response.audio.delta" && msg.delta) {
+      session.emit("audio", msg.delta); // base64 g711_ulaw
+    }
+
+    // 🧠 Tool / function calls (lead capture)
+    if (
+      msg.type === "response.output_item.added" &&
+      msg.item &&
+      msg.item.type === "function_call"
+    ) {
+      const fc = msg.item;
+
+      if (fc.name === "capture_lead" && fc.arguments) {
+        try {
+          const lead = JSON.parse(fc.arguments);
+          logger.info("[AI] capture_lead tool called:", lead);
+          session.emit("lead", lead);
+        } catch (err) {
+          logger.error(
+            "Failed to parse capture_lead arguments:",
+            err,
+            fc.arguments
+          );
+        }
+      }
+    }
+  });
+
+  ws.on("close", () => {
+    logger.info("OpenAI Realtime connection closed");
+    session._isOpen = false;
+  });
+
+  ws.on("error", (err) => {
+    logger.error("OpenAI Realtime error:", err);
+  });
+
+  return session;
+}
+
+module.exports = startRealtimeSession;
