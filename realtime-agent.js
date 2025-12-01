@@ -82,85 +82,100 @@ Ask follow-up questions when needed.
 Speak British English. Do not say you are an AI unless asked.
 `;
 
-    const sessionUpdate = {
-      type: "session.update",
-      session: {
-        instructions,
-        voice: clientConfig.voice || "alloy",
-        input_audio_format: "g711_ulaw",
-        output_audio_format: "g711_ulaw",
-        modalities: ["audio", "text"],
-        turn_detection: {
-          type: "server_vad",
-          silence_duration_ms: 2000,
-          prefix_padding_ms: 400,
-        },
-
-        // 🚀 enable tools
-        tools: [
-          {
-            type: "function",
-            name: "capture_lead",
-            description:
-              "Capture a fully qualified service lead from the caller.",
-            parameters: {
-              type: "object",
-              properties: {
-                name: {
-                  type: "string",
-                  description: "Caller full name",
-                },
-                phone: {
-                  type: "string",
-                  description: "Best contact phone number",
-                },
-                email: {
-                  type: "string",
-                  description: "Email address if provided",
-                },
-                address: {
-                  type: "string",
-                  description: "Full address including street, town, etc.",
-                },
-                postcode: {
-                  type: "string",
-                  description: "UK postcode",
-                },
-                job_type: {
-                  type: "string",
-                  description:
-                    "Short job type/category, e.g. 'consumer unit upgrade'",
-                },
-                description: {
-                  type: "string",
-                  description:
-                    "Detailed description of the issue or work requested",
-                },
-                urgency: {
-                  type: "string",
-                  enum: ["low", "medium", "high"],
-                  description:
-                    "How urgent the job is from the caller’s perspective",
-                },
-                company: {
-                  type: "string",
-                  description: "Company name for commercial callers",
-                },
-                how_found: {
-                  type: "string",
-                  description:
-                    "How the caller found the business (Google, referral, etc.)",
-                },
-              },
-              required: ["name", "phone", "address", "postcode", "description"],
-            },
+    // First: base session config (audio + VAD etc)
+    ws.send(
+      JSON.stringify({
+        type: "session.update",
+        session: {
+          instructions,
+          voice: clientConfig.voice || "alloy",
+          input_audio_format: "g711_ulaw",
+          output_audio_format: "g711_ulaw",
+          modalities: ["audio", "text"],
+          turn_detection: {
+            type: "server_vad",
+            silence_duration_ms: 2000,
+            prefix_padding_ms: 400,
           },
-        ],
-        tool_choice: "auto", // let the model decide when to call capture_lead
-      },
-    };
+        },
+      })
+    );
 
-    ws.send(JSON.stringify(sessionUpdate));
+    // Second: tools + tool_choice (mirrors official examples)
+    ws.send(
+      JSON.stringify({
+        type: "session.update",
+        session: {
+          tools: [
+            {
+              type: "function",
+              name: "capture_lead",
+              description:
+                "Capture a fully qualified service lead from the caller.",
+              parameters: {
+                type: "object",
+                properties: {
+                  name: {
+                    type: "string",
+                    description: "Caller full name",
+                  },
+                  phone: {
+                    type: "string",
+                    description: "Best contact phone number",
+                  },
+                  email: {
+                    type: "string",
+                    description: "Email address if provided",
+                  },
+                  address: {
+                    type: "string",
+                    description:
+                      "Full address including street, town, etc.",
+                  },
+                  postcode: {
+                    type: "string",
+                    description: "UK postcode",
+                  },
+                  job_type: {
+                    type: "string",
+                    description:
+                      "Short job type/category, e.g. 'consumer unit upgrade'",
+                  },
+                  description: {
+                    type: "string",
+                    description:
+                      "Detailed description of the issue or work requested",
+                  },
+                  urgency: {
+                    type: "string",
+                    enum: ["low", "medium", "high"],
+                    description:
+                      "How urgent the job is from the caller’s perspective",
+                  },
+                  company: {
+                    type: "string",
+                    description: "Company name for commercial callers",
+                  },
+                  how_found: {
+                    type: "string",
+                    description:
+                      "How the caller found the business (Google, referral, etc.)",
+                  },
+                },
+                required: [
+                  "name",
+                  "phone",
+                  "address",
+                  "postcode",
+                  "description",
+                ],
+              },
+            },
+          ],
+          tool_choice: "auto",
+        },
+      })
+    );
 
     // Flush any buffered audio now that the WS is open
     if (session._pendingAudio.length > 0) {
@@ -188,12 +203,12 @@ Speak British English. Do not say you are an AI unless asked.
       return;
     }
 
-    // TEMP DEBUG: see what kinds of responses we're getting
+    // Debug all response.* events so we can see function behaviour
     if (msg.type && msg.type.startsWith("response.")) {
       logger.info(
         "[Realtime] Event:",
         msg.type,
-        JSON.stringify(msg).slice(0, 500) // keep log sane
+        JSON.stringify(msg).slice(0, 500)
       );
     }
 
@@ -213,8 +228,9 @@ Speak British English. Do not say you are an AI unless asked.
     }
 
     // 🧠 Tool / function calls (lead capture)
+    // Official examples look at response.output_item.done with item.type === "function_call"
     if (
-      msg.type === "response.output_item.added" &&
+      msg.type === "response.output_item.done" &&
       msg.item &&
       msg.item.type === "function_call"
     ) {
